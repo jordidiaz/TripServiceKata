@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using TripService.Exception;
 using Xunit;
@@ -38,7 +39,20 @@ public class TripServiceTests
         var trips = _sut.GetTripsByUser(friend);
 
         trips.Count.Should().Be(0);
+    }
+    
+    [Fact]
+    public void Should_return_trips_if_users_are_friends()
+    {
+        _loggedInUser = _registeredUser;
+        var friend = new User.User();
+        friend.AddFriend(_loggedInUser);
+        friend.AddTrip(new Trip.Trip("Brazil"));
+        friend.AddTrip(new Trip.Trip("Zarautz"));
 
+        var trips = _sut.GetTripsByUser(friend);
+
+        trips.Count.Should().Be(2);
     }
     
     private class TestableTripService : Trip.TripService
@@ -46,6 +60,11 @@ public class TripServiceTests
         protected override User.User? GetLoggedUser()
         {
             return _loggedInUser;
+        }
+
+        protected override List<Trip.Trip> FindTripsByUser(User.User user)
+        {
+            return user.Trips();
         }
     }
 }

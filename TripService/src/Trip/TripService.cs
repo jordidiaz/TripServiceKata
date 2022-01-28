@@ -23,7 +23,7 @@ public class TripService
             }
             if (isFriend)
             {
-                tripList = TripDAO.FindTripsByUser(user);
+                tripList = FindTripsByUser(user);
             }
             return tripList;
         }
@@ -31,6 +31,11 @@ public class TripService
         {
             throw new UserNotLoggedInException();
         }
+    }
+
+    protected virtual List<Trip> FindTripsByUser(User.User user)
+    {
+        return TripDAO.FindTripsByUser(user);
     }
 
     protected virtual User.User? GetLoggedUser()
