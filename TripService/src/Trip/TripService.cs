@@ -33,7 +33,7 @@ public class TripService
         }
     }
 
-    protected virtual User.User GetLoggedUser()
+    protected virtual User.User? GetLoggedUser()
     {
         return UserSession.GetInstance().GetLoggedUser();
     }
