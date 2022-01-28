@@ -8,15 +8,21 @@ namespace TripService;
 
 public class TripServiceTests
 {
+    private const string Brazil = "Brazil";
+    private const string Zarautz = "Zarautz";
+
     private const User.User Guest = null!;
     private const User.User NoUser = null!;
     private readonly User.User _registeredUser = new ();
     private static User.User? _loggedInUser;
-    private TestableTripService _sut;
+    
+    private readonly TestableTripService _sut;
 
     public TripServiceTests()
     {
         _sut = new TestableTripService();
+        
+        _loggedInUser = _registeredUser;
     }
     
     [Fact]
@@ -32,9 +38,8 @@ public class TripServiceTests
     [Fact]
     public void Should_not_return_any_trips_if_users_are_not_friends()
     {
-        _loggedInUser = _registeredUser;
         var friend = new User.User();
-        friend.AddTrip(new Trip.Trip("Brazil"));
+        friend.AddTrip(new Trip.Trip(Brazil));
 
         var trips = _sut.GetTripsByUser(friend);
 
@@ -44,11 +49,10 @@ public class TripServiceTests
     [Fact]
     public void Should_return_trips_if_users_are_friends()
     {
-        _loggedInUser = _registeredUser;
         var friend = new User.User();
-        friend.AddFriend(_loggedInUser);
-        friend.AddTrip(new Trip.Trip("Brazil"));
-        friend.AddTrip(new Trip.Trip("Zarautz"));
+        friend.AddFriend(_loggedInUser!);
+        friend.AddTrip(new Trip.Trip(Brazil));
+        friend.AddTrip(new Trip.Trip(Zarautz));
 
         var trips = _sut.GetTripsByUser(friend);
 
