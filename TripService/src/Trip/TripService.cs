@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using TripService.Exception;
-using TripService.User;
 
 namespace TripService.Trip;
 
 public class TripService
 {
-    public List<Trip> GetTripsByUser(User.User user)
+    public List<Trip> GetTripsByUser(User.User user, User.User loggedInUser)
     {
-        if (GetLoggedUser() is null)
+        if (loggedInUser is null)
         {
             throw new UserNotLoggedInException();
         }
         
-        return user.IsFriendOf(GetLoggedUser()) ? FindTripsByUser(user) : NoTrips();
+        return user.IsFriendOf(loggedInUser) ? FindTripsByUser(user) : NoTrips();
     }
 
     private static List<Trip> NoTrips()
@@ -24,11 +23,6 @@ public class TripService
     protected virtual List<Trip> FindTripsByUser(User.User user)
     {
         return TripDAO.FindTripsByUser(user);
-    }
-
-    protected virtual User.User? GetLoggedUser()
-    {
-        return UserSession.GetInstance().GetLoggedUser();
     }
 }
 
