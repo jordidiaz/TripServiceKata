@@ -17,22 +17,20 @@ public partial class TripServiceTests
     private const User.User NoUser = null!;
     private readonly User.User _registeredUser = new ();
     
-    private readonly TestableTripService _sut;
-    private readonly Trip.TripService _realTripService;
+    private readonly Trip.TripService _tripService;
 
     private readonly Mock<TripDAO> _tripDaoMock;
 
     public TripServiceTests()
     {
         _tripDaoMock = new Mock<TripDAO>();
-        _realTripService = new Trip.TripService(_tripDaoMock.Object);
-        _sut = new TestableTripService(_tripDaoMock.Object);
+        _tripService = new Trip.TripService(_tripDaoMock.Object);
     }
     
     [Fact]
     public void Should_throw_an_exception_when_user_is_not_logged_in()
     {
-        Action action = () => _realTripService.GetTripsByUser(NoUser, Guest);
+        Action action = () => _tripService.GetFriendTrips(NoUser, Guest);
 
         action.Should().Throw<UserNotLoggedInException>();
     }
@@ -44,7 +42,7 @@ public partial class TripServiceTests
             .WithTrips(new Trip.Trip(Brazil))
             .Build();
 
-        var trips = _realTripService.GetTripsByUser(friend, _registeredUser);
+        var trips = _tripService.GetFriendTrips(friend, _registeredUser);
 
         trips.Count.Should().Be(0);
     }
@@ -65,20 +63,8 @@ public partial class TripServiceTests
 
         _tripDaoMock.Setup(x => x.TripsBy(friend)).Returns(friend.Trips);
             
-        var friendTrips = _realTripService.GetTripsByUser(friend, _registeredUser);
+        var friendTrips = _tripService.GetFriendTrips(friend, _registeredUser);
 
         friendTrips.Count.Should().Be(2);
-    }
-
-    private class TestableTripService : Trip.TripService
-    {
-        protected override List<Trip.Trip> FindTripsByUser(User.User user)
-        {
-            return user.Trips();
-        }
-
-        public TestableTripService(TripDAO tripDao) : base(tripDao)
-        {
-        }
     }
 }

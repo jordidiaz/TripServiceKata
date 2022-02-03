@@ -12,14 +12,19 @@ public class TripService
         _tripDao = tripDao;
     }
 
-    public List<Trip> GetTripsByUser(User.User user, User.User loggedInUser)
+    public List<Trip> GetFriendTrips(User.User friend, User.User loggedInUser)
+    {
+        IsUserLoggedOrThrow(loggedInUser);
+
+        return friend.IsFriendOf(loggedInUser) ? FindTripsByUser(friend) : NoTrips();
+    }
+
+    private static void IsUserLoggedOrThrow(User.User loggedInUser)
     {
         if (loggedInUser is null)
         {
             throw new UserNotLoggedInException();
         }
-        
-        return user.IsFriendOf(loggedInUser) ? FindTripsByUser(user) : NoTrips();
     }
 
     private static List<Trip> NoTrips()
