@@ -6,7 +6,7 @@ using Xunit;
 
 namespace TripService;
 
-public class TripServiceTests
+public partial class TripServiceTests
 {
     private const string Brazil = "Brazil";
     private const string Zarautz = "Zarautz";
@@ -38,8 +38,9 @@ public class TripServiceTests
     [Fact]
     public void Should_not_return_any_trips_if_users_are_not_friends()
     {
-        var friend = new User.User();
-        friend.AddTrip(new Trip.Trip(Brazil));
+        var friend = new UserBuilder()
+            .WithTrips(new Trip.Trip(Brazil))
+            .Build();
 
         var trips = _sut.GetTripsByUser(friend);
 
@@ -49,16 +50,16 @@ public class TripServiceTests
     [Fact]
     public void Should_return_trips_if_users_are_friends()
     {
-        var friend = new User.User();
-        friend.AddFriend(_loggedInUser!);
-        friend.AddTrip(new Trip.Trip(Brazil));
-        friend.AddTrip(new Trip.Trip(Zarautz));
+        var friend = new UserBuilder()
+            .WithFriends(_loggedInUser)
+            .WithTrips(new Trip.Trip(Brazil), new Trip.Trip(Zarautz))
+            .Build();
 
         var trips = _sut.GetTripsByUser(friend);
 
         trips.Count.Should().Be(2);
     }
-    
+
     private class TestableTripService : Trip.TripService
     {
         protected override User.User? GetLoggedUser()
