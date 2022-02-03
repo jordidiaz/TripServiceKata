@@ -5,6 +5,13 @@ namespace TripService.Trip;
 
 public class TripService
 {
+    private readonly TripDAO _tripDao;
+
+    public TripService(TripDAO tripDao)
+    {
+        _tripDao = tripDao;
+    }
+
     public List<Trip> GetTripsByUser(User.User user, User.User loggedInUser)
     {
         if (loggedInUser is null)
@@ -22,7 +29,7 @@ public class TripService
 
     protected virtual List<Trip> FindTripsByUser(User.User user)
     {
-        return TripDAO.FindTripsByUser(user);
+        return _tripDao.TripsBy(user);
     }
 }
 
