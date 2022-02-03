@@ -1,0 +1,1 @@
+TripService kata in C# inspired in https://github.com/sandromancuso/trip-service-kata
